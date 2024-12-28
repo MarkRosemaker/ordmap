@@ -12,27 +12,33 @@ import (
 	"github.com/go-json-experiment/json/jsontext"
 )
 
-var orderdMapType = reflect.TypeFor[orderedMap]()
+var orderdMapType = reflect.TypeFor[MyOrderedMap]()
 
-type orderedMap map[string]*value
-
-func (om orderedMap) ByIndex() iter.Seq2[string, *value] {
-	return ordmap.OrderedMapByIndex(om, func(v *value) int { return v.idx })
-}
-
-type value struct {
+type Value struct {
 	Foo string `json:"foo"`
 	Bar int    `json:"bar"`
 
 	idx int
 }
 
-func (om *orderedMap) UnmarshalJSONV2(dec *jsontext.Decoder, opts json.Options) error {
-	return ordmap.UnmarshalOrderedMap(om, dec, opts, func(v *value, i int) { v.idx = i })
+func getIndex(v *Value) int    { return v.idx }
+func setIndex(v *Value, i int) { v.idx = i }
+
+// compile time assertion to make sure we wrote the functions correctly
+var _ ordmap.JSONV2OrderedMap[string, *Value] = (*MyOrderedMap)(nil)
+
+type MyOrderedMap map[string]*Value
+
+func (om MyOrderedMap) ByIndex() iter.Seq2[string, *Value] {
+	return ordmap.ByIndex(om, getIndex)
 }
 
-func (om orderedMap) MarshalJSONV2(enc *jsontext.Encoder, opts json.Options) error {
-	return ordmap.MarshalOrderedMap(&om, enc, opts)
+func (om *MyOrderedMap) UnmarshalJSONV2(dec *jsontext.Decoder, opts json.Options) error {
+	return ordmap.UnmarshalJSONV2(om, dec, opts, setIndex)
+}
+
+func (om *MyOrderedMap) MarshalJSONV2(enc *jsontext.Encoder, opts json.Options) error {
+	return ordmap.MarshalJSONV2(om, enc, opts)
 }
 
 func TestOrderedMap_ByIndex(t *testing.T) {
@@ -40,10 +46,10 @@ func TestOrderedMap_ByIndex(t *testing.T) {
 
 	// test that the keys are sorted by index
 	want := []string{"foo", "bar", "baz"}
-	om := orderedMap{
-		"foo": &value{idx: 1},
-		"bar": &value{idx: 2},
-		"baz": &value{idx: 3},
+	om := MyOrderedMap{
+		"foo": &Value{idx: 1},
+		"bar": &Value{idx: 2},
+		"baz": &Value{idx: 3},
 	}
 
 	i := 0
@@ -60,11 +66,11 @@ func TestOrderedMap_ByIndex(t *testing.T) {
 
 	// test that additional keys are included but come after the sorted keys
 	want = append(want, "qux", "moo", "one", "two", "three")
-	om["qux"] = &value{}
-	om["moo"] = &value{}
-	om["one"] = &value{}
-	om["two"] = &value{}
-	om["three"] = &value{}
+	om["qux"] = &Value{}
+	om["moo"] = &Value{}
+	om["one"] = &Value{}
+	om["two"] = &Value{}
+	om["three"] = &Value{}
 
 	i = 0
 	for k := range om.ByIndex() {
@@ -88,7 +94,7 @@ func TestOrderedMap_JSON(t *testing.T) {
 	t.Parallel()
 
 	want := `{"foo":{"foo":"foo","bar":1},"bar":{"foo":"foo","bar":1},"baz":{"foo":"foo","bar":1},"qux":{"foo":"","bar":0},"moo":{"foo":"","bar":0},"one":{"foo":"","bar":0},"two":{"foo":"","bar":0},"three":{"foo":"","bar":0}}`
-	om := &orderedMap{}
+	om := &MyOrderedMap{}
 	if err := json.Unmarshal([]byte(want), om); err != nil {
 		t.Fatal(err)
 	}
@@ -107,7 +113,7 @@ func TestOrderedMap_Unmarshal_Errors(t *testing.T) {
 	t.Parallel()
 
 	t.Run("object member name must be a string", func(t *testing.T) {
-		err := json.Unmarshal([]byte(`{1}`), &orderedMap{})
+		err := json.Unmarshal([]byte(`{1}`), &MyOrderedMap{})
 		err = unwrapSyntacticError(t, err, "")
 
 		if err == nil {
@@ -126,14 +132,14 @@ func TestOrderedMap_Unmarshal_Errors(t *testing.T) {
 		{"empty", ``, nil, `EOF`},
 		{"string instead of object", `""`, nil, `expected {, got string`},
 		// {"missing string for object name", `{1}`, nil, `jsontext: missing string for object name`},
-		{"missing string for object name", `{"foo":1}`, []reflect.Type{reflect.TypeFor[value]()}, ``},
+		{"missing string for object name", `{"foo":1}`, []reflect.Type{reflect.TypeFor[Value]()}, ``},
 		{
 			"missing string for object name", `{"foo":{"foo":"foo","bar":1`,
 			nil, `["foo"]: jsontext: unexpected EOF within "/foo" after offset 27`,
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			err := json.Unmarshal([]byte(tc.data), &orderedMap{})
+			err := json.Unmarshal([]byte(tc.data), &MyOrderedMap{})
 			for _, tp := range append([]reflect.Type{orderdMapType}, tc.types...) {
 				err = unwrapSemanticError(t, err, tp)
 			}
@@ -142,7 +148,7 @@ func TestOrderedMap_Unmarshal_Errors(t *testing.T) {
 				if err == nil {
 					t.Fatal("expected error")
 				} else if err.Error() != tc.err {
-					t.Fatalf("got: %v, want: %v", err, tc.err)
+					t.Fatalf("got: %q, want: %q", err, tc.err)
 				}
 			} else if err != nil {
 				t.Fatal(err)
@@ -157,32 +163,32 @@ func (imp impossibleToMarshal) MarshalJSONV2(*jsontext.Encoder, json.Options) er
 	return imp.err
 }
 
-type cannotMarshalKey map[impossibleToMarshal]*value
+type cannotMarshalKey map[impossibleToMarshal]*Value
 
-func (om cannotMarshalKey) ByIndex() iter.Seq2[impossibleToMarshal, *value] {
-	return ordmap.OrderedMapByIndex(om, func(v *value) int { return v.idx })
+func (om cannotMarshalKey) ByIndex() iter.Seq2[impossibleToMarshal, *Value] {
+	return ordmap.ByIndex(om, func(v *Value) int { return v.idx })
 }
 
 func (om cannotMarshalKey) MarshalJSONV2(enc *jsontext.Encoder, opts json.Options) error {
-	return ordmap.MarshalOrderedMap(&om, enc, opts)
+	return ordmap.MarshalJSONV2(&om, enc, opts)
 }
 
 func (om *cannotMarshalKey) UnmarshalJSONV2(dec *jsontext.Decoder, opts json.Options) error {
-	return ordmap.UnmarshalOrderedMap(om, dec, opts, func(v *value, i int) { v.idx = i })
+	return ordmap.UnmarshalJSONV2(om, dec, opts, func(v *Value, i int) { v.idx = i })
 }
 
 type cannotMarshalValue map[string]*impossibleToMarshal
 
 func (om cannotMarshalValue) ByIndex() iter.Seq2[string, *impossibleToMarshal] {
-	return ordmap.OrderedMapByIndex(om, func(v *impossibleToMarshal) int { return 0 })
+	return ordmap.ByIndex(om, func(v *impossibleToMarshal) int { return 0 })
 }
 
 func (om cannotMarshalValue) MarshalJSONV2(enc *jsontext.Encoder, opts json.Options) error {
-	return ordmap.MarshalOrderedMap(&om, enc, opts)
+	return ordmap.MarshalJSONV2(&om, enc, opts)
 }
 
 func (om *cannotMarshalValue) UnmarshalJSONV2(dec *jsontext.Decoder, opts json.Options) error {
-	return ordmap.UnmarshalOrderedMap(om, dec, opts, func(v *impossibleToMarshal, i int) {})
+	return ordmap.UnmarshalJSONV2(om, dec, opts, func(v *impossibleToMarshal, i int) {})
 }
 
 func TestOrderedMap_Marshal_Errors(t *testing.T) {
@@ -191,7 +197,7 @@ func TestOrderedMap_Marshal_Errors(t *testing.T) {
 	someErr := errors.New("some error")
 
 	t.Run("marshalling key", func(t *testing.T) {
-		om := cannotMarshalKey{impossibleToMarshal{err: someErr}: &value{}}
+		om := cannotMarshalKey{impossibleToMarshal{err: someErr}: &Value{}}
 		_, err := json.Marshal(om)
 		err = unwrapSemanticError(t, err, reflect.TypeFor[impossibleToMarshal]())
 		if err == nil {

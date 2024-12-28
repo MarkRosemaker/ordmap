@@ -15,14 +15,22 @@ import (
 type OrderedMap[K comparable, V any] interface {
 	// ByIndex returns a sequence of key-value pairs sorted by index.
 	ByIndex() iter.Seq2[K, V]
+}
+
+// JSONV2OrderedMap is an ordered map that can be marshalled and unmarshalled
+// using the [JSON v2 package].
+//
+// [JSON v2 package]: https://pkg.go.dev/github.com/go-json-experiment/json
+type JSONV2OrderedMap[K comparable, V any] interface {
+	OrderedMap[K, V]
 	// OrderedMap must implement json.MarshalerV2 using MarshalOrderedMap.
 	json.MarshalerV2
 	// OrderedMap must implement json.UnmarshalerV2 using UnmarshalOrderedMap.
 	json.UnmarshalerV2
 }
 
-// OrderedMapByIndex is a helper function for an ordered map to implement OrderedMapByIndex() and fulfill the OrderedMap interface.
-func OrderedMapByIndex[M ~map[K]V, K comparable, V any](m M, getIndex func(V) int) iter.Seq2[K, V] {
+// ByIndex is a helper function for an ordered map to implement ByIndex() and fulfill the OrderedMap interface.
+func ByIndex[M ~map[K]V, K comparable, V any](m M, getIndex func(V) int) iter.Seq2[K, V] {
 	// get the keys and sort them by index
 	keys := maps.Keys(m)
 	sort.Slice(keys, func(i, j int) bool {
@@ -42,14 +50,19 @@ func OrderedMapByIndex[M ~map[K]V, K comparable, V any](m M, getIndex func(V) in
 	}
 }
 
-// UnmarshalOrderedMap is a helper function to implement UnmarshalJSON on an ordered map.
+// UnmarshalJSONV2 is a helper function to implement UnmarshalJSON on an ordered map.
 // The setIndex function is called for each value in the map, so that its index is set accordingly.
-func UnmarshalOrderedMap[M ~map[K]*R, K comparable, R any](
+func UnmarshalJSONV2[M ~map[K]*R, K comparable, R any](
 	m *M, dec *jsontext.Decoder, opts json.Options,
 	setIndex func(*R, int),
 ) error {
-	if err := skipTokenKind(dec, '{'); err != nil {
+	tkn, err := dec.ReadToken()
+	if err != nil {
 		return err
+	}
+
+	if tkn.Kind() != '{' {
+		return fmt.Errorf("expected {, got %s", tkn.Kind())
 	}
 
 	// create the map
@@ -83,8 +96,8 @@ func UnmarshalOrderedMap[M ~map[K]*R, K comparable, R any](
 	}
 }
 
-// MarshalOrderedMap is a helper function to implement MarshalJSON on an ordered map.
-func MarshalOrderedMap[M OrderedMap[K, V], K comparable, V any](
+// MarshalJSONV2 is a helper function to implement MarshalJSON on an ordered map.
+func MarshalJSONV2[M OrderedMap[K, V], K comparable, V any](
 	m M, enc *jsontext.Encoder, opts json.Options,
 ) error {
 	if err := enc.WriteToken(jsontext.ObjectStart); err != nil {
@@ -102,18 +115,4 @@ func MarshalOrderedMap[M OrderedMap[K, V], K comparable, V any](
 	}
 
 	return enc.WriteToken(jsontext.ObjectEnd)
-}
-
-// skipTokenKind reads a token from the decoder and checks if it is of the expected kind
-func skipTokenKind(dec *jsontext.Decoder, kind jsontext.Kind) error {
-	tkn, err := dec.ReadToken()
-	if err != nil {
-		return err
-	}
-
-	if got := tkn.Kind(); got != kind {
-		return fmt.Errorf("expected %s, got %s", kind, got)
-	}
-
-	return nil
 }
