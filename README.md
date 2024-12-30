@@ -1,7 +1,7 @@
 # Ordered Map
 [![Go Reference](https://pkg.go.dev/badge/github.com/MarkRosemaker/ordmap.svg)](https://pkg.go.dev/github.com/MarkRosemaker/ordmap)
 [![Go Report Card](https://goreportcard.com/badge/github.com/MarkRosemaker/ordmap)](https://goreportcard.com/report/github.com/MarkRosemaker/ordmap)
-![Code Coverage](https://img.shields.io/badge/coverage-98.3%25-brightgreen)
+![Code Coverage](https://img.shields.io/badge/coverage-98.5%25-brightgreen)
 [![License: **MIT**](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 <p align="center">
   <img alt="ordmap logo: a gopher holding a map, surrounded by keys" src=logo.jpg width=300>
@@ -59,6 +59,11 @@ func setIndex(v *ValueWithIndex, i int) *ValueWithIndex { v.idx = i; return v }
 // ByIndex returns a sequence of key-value pairs ordered by index.
 func (om MyOrderedMap) ByIndex() iter.Seq2[string, *ValueWithIndex] {
 	return ordmap.ByIndex(om, getIndex)
+}
+
+// Sort sorts the map by key and sets the indices accordingly.
+func (om MyOrderedMap) Sort() {
+	ordmap.Sort(om, setIndex)
 }
 
 // MarshalJSONV2 marshals the key-value pairs in order.
