@@ -14,8 +14,8 @@ type ValueWithIndex struct {
 	idx int
 }
 
-func getIndex(v *ValueWithIndex) int    { return v.idx }
-func setIndex(v *ValueWithIndex, i int) { v.idx = i }
+func getIndex(v *ValueWithIndex) int                    { return v.idx }
+func setIndex(v *ValueWithIndex, i int) *ValueWithIndex { v.idx = i; return v }
 
 type Value struct {
 	Foo string `json:"foo"`

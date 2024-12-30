@@ -123,7 +123,8 @@ func (om cannotMarshalKey) MarshalJSONV2(enc *jsontext.Encoder, opts json.Option
 }
 
 func (om *cannotMarshalKey) UnmarshalJSONV2(dec *jsontext.Decoder, opts json.Options) error {
-	return ordmap.UnmarshalJSONV2(om, dec, opts, func(v *ValueWithIndex, i int) { v.idx = i })
+	return ordmap.UnmarshalJSONV2(om, dec, opts,
+		func(v *ValueWithIndex, i int) *ValueWithIndex { v.idx = i; return v })
 }
 
 // a map which has values that cannot be marshalled
@@ -138,7 +139,8 @@ func (om cannotMarshalValue) MarshalJSONV2(enc *jsontext.Encoder, opts json.Opti
 }
 
 func (om *cannotMarshalValue) UnmarshalJSONV2(dec *jsontext.Decoder, opts json.Options) error {
-	return ordmap.UnmarshalJSONV2(om, dec, opts, func(v *impossibleToMarshal, i int) {})
+	return ordmap.UnmarshalJSONV2(om, dec, opts,
+		func(v *impossibleToMarshal, i int) *impossibleToMarshal { return v })
 }
 
 func TestMarshalJSONV2_Errors(t *testing.T) {

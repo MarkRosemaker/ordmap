@@ -26,4 +26,4 @@ func (v Value[_]) MarshalJSONV2(enc *jsontext.Encoder, opts json.Options) error 
 func getIndex[V any](v Value[V]) int { return v.idx }
 
 // setIndex sets the index of a value.
-func setIndex[V any](v *Value[V], i int) { v.idx = i }
+func setIndex[V any](v Value[V], i int) Value[V] { v.idx = i; return v }

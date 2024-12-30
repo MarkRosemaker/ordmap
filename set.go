@@ -9,12 +9,11 @@ func (om *OrderedMap[K, V]) Set(key K, v V) {
 func Set[M ~map[K]V, K comparable, V any](
 	m *M, key K, v V,
 	getIndex func(V) int,
-	setIndex func(*V, int),
+	setIndex func(V, int) V,
 ) {
 	// check if the map is nil and create it if it is
 	if *m == nil {
-		setIndex(&v, 1)
-		*m = M{key: v}
+		*m = M{key: setIndex(v, 1)}
 		return
 	}
 
@@ -25,6 +24,5 @@ func Set[M ~map[K]V, K comparable, V any](
 		}
 	}
 
-	setIndex(&v, highestIdx+1)
-	(*m)[key] = v
+	(*m)[key] = setIndex(v, highestIdx+1)
 }

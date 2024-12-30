@@ -7,7 +7,8 @@ import (
 )
 
 func (om *UserDefinedOrderedMap) Set(key string, v *ValueWithIndex) {
-	ordmap.Set(om, key, v, func(v *ValueWithIndex) int { return v.idx }, func(v **ValueWithIndex, i int) { (*v).idx = i }) // TODO
+	ordmap.Set(om, key, v, func(v *ValueWithIndex) int { return v.idx },
+		func(v *ValueWithIndex, i int) *ValueWithIndex { v.idx = i; return v })
 }
 
 func TestSet(t *testing.T) {
