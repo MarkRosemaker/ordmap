@@ -8,12 +8,12 @@ import (
 	"github.com/go-json-experiment/json/jsontext"
 )
 
+// UnmarshalJSONV2 unmarshals the key-value pairs in order and sets the indices.
 func (om *OrderedMap[K, V]) UnmarshalJSONV2(dec *jsontext.Decoder, opts json.Options) error {
 	return UnmarshalJSONV2(om, dec, opts, setIndex)
 }
 
-// UnmarshalJSONV2 is a helper function to make an ordered map fulfil the `json.UnmarshalerV2` interface.
-// The setIndex function is called for each value in the map, so that its index is set accordingly.
+// UnmarshalJSONV2 is a helper function to unmarshal an ordered map setting the indices in order.
 func UnmarshalJSONV2[M ~map[K]R, K comparable, R any](
 	m *M, dec *jsontext.Decoder, opts json.Options,
 	setIndex func(R, int) R,
