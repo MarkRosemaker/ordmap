@@ -71,7 +71,7 @@ func (om *MyOrderedMap) UnmarshalJSONV2(dec *jsontext.Decoder, opts json.Options
 	return ordmap.UnmarshalJSONV2(om, dec, opts, setIndex)
 }
 
-// Set sets a value in the map, assigning it the highest index + 1.
+// Set sets a value in the map, adding it at the end of the order.
 func (om *MyOrderedMap) Set(key string, v *ValueWithIndex) {
 	ordmap.Set(om, key, v, getIndex, setIndex)
 }

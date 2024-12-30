@@ -1,11 +1,11 @@
 package ordmap
 
-// Set sets a value in the map, assigning it the highest index + 1.
+// Set sets a value in the map, adding it at the end of the order.
 func (om *OrderedMap[K, V]) Set(key K, v V) {
 	Set(om, key, Value[V]{V: v}, getIndex[V], setIndex[V])
 }
 
-// Set is a helper function to set a value in the map, assigning it the highest index + 1.
+// Set is a helper function to set a value in the map, adding it at the end of the order.
 func Set[M ~map[K]V, K comparable, V any](
 	m *M, key K, v V,
 	getIndex func(V) int,
