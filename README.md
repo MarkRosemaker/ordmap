@@ -3,6 +3,9 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/MarkRosemaker/ordmap)](https://goreportcard.com/report/github.com/MarkRosemaker/ordmap)
 ![Code Coverage](https://img.shields.io/badge/coverage-98.3%25-brightgreen)
 [![License: **MIT**](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+<p align="center">
+  <img alt="ordmap logo: a gopher holding a map, surrounded by keys" src=logo.jpg width=300>
+</p>
 
 `ordmap` is a Go package that provides a generic ordered map implementation, primarily designed for JSON v2 marshalling and unmarshalling using the [go-json-experiment](https://github.com/go-json-experiment/json) library.
 
