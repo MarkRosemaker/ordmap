@@ -11,11 +11,11 @@ import (
 	"github.com/go-json-experiment/json/jsontext"
 )
 
-func (om *UserDefinedOrderedMap) MarshalJSONV2(enc *jsontext.Encoder, opts json.Options) error {
-	return ordmap.MarshalJSONV2(om, enc, opts)
+func (om *UserDefinedOrderedMap) MarshalJSONTo(enc *jsontext.Encoder, opts json.Options) error {
+	return ordmap.MarshalJSONTo(om, enc, opts)
 }
 
-func TestMarshalJSONV2(t *testing.T) {
+func TestMarshalJSONTo(t *testing.T) {
 	t.Parallel()
 
 	const want = `{"foo":{"foo":"a","bar":6},"bar":{"foo":"b","bar":7},"baz":{"foo":"c","bar":8}}`
@@ -107,7 +107,7 @@ func TestMarshalJSONV2(t *testing.T) {
 // a struct that cannot be marshalled
 type impossibleToMarshal struct{ err error }
 
-func (imp impossibleToMarshal) MarshalJSONV2(*jsontext.Encoder, json.Options) error {
+func (imp impossibleToMarshal) MarshalJSONTo(*jsontext.Encoder, json.Options) error {
 	return imp.err
 }
 
@@ -118,12 +118,12 @@ func (om cannotMarshalKey) ByIndex() iter.Seq2[impossibleToMarshal, *ValueWithIn
 	return ordmap.ByIndex(om, func(v *ValueWithIndex) int { return v.idx })
 }
 
-func (om cannotMarshalKey) MarshalJSONV2(enc *jsontext.Encoder, opts json.Options) error {
-	return ordmap.MarshalJSONV2(&om, enc, opts)
+func (om cannotMarshalKey) MarshalJSONTo(enc *jsontext.Encoder, opts json.Options) error {
+	return ordmap.MarshalJSONTo(&om, enc, opts)
 }
 
-func (om *cannotMarshalKey) UnmarshalJSONV2(dec *jsontext.Decoder, opts json.Options) error {
-	return ordmap.UnmarshalJSONV2(om, dec, opts,
+func (om *cannotMarshalKey) UnmarshalJSONFrom(dec *jsontext.Decoder, opts json.Options) error {
+	return ordmap.UnmarshalJSONFrom(om, dec, opts,
 		func(v *ValueWithIndex, i int) *ValueWithIndex { v.idx = i; return v })
 }
 
@@ -134,16 +134,16 @@ func (om cannotMarshalValue) ByIndex() iter.Seq2[string, *impossibleToMarshal] {
 	return ordmap.ByIndex(om, func(v *impossibleToMarshal) int { return 0 })
 }
 
-func (om cannotMarshalValue) MarshalJSONV2(enc *jsontext.Encoder, opts json.Options) error {
-	return ordmap.MarshalJSONV2(&om, enc, opts)
+func (om cannotMarshalValue) MarshalJSONTo(enc *jsontext.Encoder, opts json.Options) error {
+	return ordmap.MarshalJSONTo(&om, enc, opts)
 }
 
-func (om *cannotMarshalValue) UnmarshalJSONV2(dec *jsontext.Decoder, opts json.Options) error {
-	return ordmap.UnmarshalJSONV2(om, dec, opts,
+func (om *cannotMarshalValue) UnmarshalJSONFrom(dec *jsontext.Decoder, opts json.Options) error {
+	return ordmap.UnmarshalJSONFrom(om, dec, opts,
 		func(v *impossibleToMarshal, i int) *impossibleToMarshal { return v })
 }
 
-func TestMarshalJSONV2_Errors(t *testing.T) {
+func TestMarshalJSONTo_Errors(t *testing.T) {
 	t.Parallel()
 
 	someErr := errors.New("some error")

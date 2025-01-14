@@ -9,11 +9,11 @@ import (
 	"github.com/go-json-experiment/json/jsontext"
 )
 
-func (om *UserDefinedOrderedMap) UnmarshalJSONV2(dec *jsontext.Decoder, opts json.Options) error {
-	return ordmap.UnmarshalJSONV2(om, dec, opts, setIndex)
+func (om *UserDefinedOrderedMap) UnmarshalJSONFrom(dec *jsontext.Decoder, opts json.Options) error {
+	return ordmap.UnmarshalJSONFrom(om, dec, opts, setIndex)
 }
 
-func TestUnmarshalJSONV2(t *testing.T) {
+func TestUnmarshalJSONFrom(t *testing.T) {
 	t.Parallel()
 
 	const want = `{"foo":{"foo":"foo","bar":1},"bar":{"foo":"foo","bar":1},"baz":{"foo":"foo","bar":1},"qux":{"foo":"","bar":0},"moo":{"foo":"","bar":0},"one":{"foo":"","bar":0},"two":{"foo":"","bar":0},"three":{"foo":"","bar":0}}`
