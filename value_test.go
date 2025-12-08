@@ -1,10 +1,10 @@
 package ordmap_test
 
 import (
+	"encoding/json/v2"
 	"testing"
 
 	"github.com/MarkRosemaker/ordmap"
-	"github.com/go-json-experiment/json"
 )
 
 type ValueWithIndex struct {

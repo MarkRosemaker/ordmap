@@ -1,19 +1,15 @@
 package ordmap_test
 
 import (
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"errors"
 	"iter"
 	"reflect"
 	"testing"
 
 	"github.com/MarkRosemaker/ordmap"
-	"github.com/go-json-experiment/json"
-	"github.com/go-json-experiment/json/jsontext"
 )
-
-func (om *UserDefinedOrderedMap) MarshalJSONTo(enc *jsontext.Encoder, opts json.Options) error {
-	return ordmap.MarshalJSONTo(om, enc, opts)
-}
 
 func TestMarshalJSONTo(t *testing.T) {
 	t.Parallel()
@@ -107,7 +103,9 @@ func TestMarshalJSONTo(t *testing.T) {
 // a struct that cannot be marshalled
 type impossibleToMarshal struct{ err error }
 
-func (imp impossibleToMarshal) MarshalJSONTo(*jsontext.Encoder, json.Options) error {
+var _ json.MarshalerTo = (*impossibleToMarshal)(nil)
+
+func (imp impossibleToMarshal) MarshalJSONTo(*jsontext.Encoder) error {
 	return imp.err
 }
 
@@ -118,12 +116,16 @@ func (om cannotMarshalKey) ByIndex() iter.Seq2[impossibleToMarshal, *ValueWithIn
 	return ordmap.ByIndex(om, func(v *ValueWithIndex) int { return v.idx })
 }
 
-func (om cannotMarshalKey) MarshalJSONTo(enc *jsontext.Encoder, opts json.Options) error {
-	return ordmap.MarshalJSONTo(&om, enc, opts)
+var _ json.MarshalerTo = (*cannotMarshalKey)(nil)
+
+func (om cannotMarshalKey) MarshalJSONTo(enc *jsontext.Encoder) error {
+	return ordmap.MarshalJSONTo(&om, enc)
 }
 
-func (om *cannotMarshalKey) UnmarshalJSONFrom(dec *jsontext.Decoder, opts json.Options) error {
-	return ordmap.UnmarshalJSONFrom(om, dec, opts,
+var _ json.UnmarshalerFrom = (*cannotMarshalKey)(nil)
+
+func (om *cannotMarshalKey) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	return ordmap.UnmarshalJSONFrom(om, dec,
 		func(v *ValueWithIndex, i int) *ValueWithIndex { v.idx = i; return v })
 }
 
@@ -134,12 +136,16 @@ func (om cannotMarshalValue) ByIndex() iter.Seq2[string, *impossibleToMarshal] {
 	return ordmap.ByIndex(om, func(v *impossibleToMarshal) int { return 0 })
 }
 
-func (om cannotMarshalValue) MarshalJSONTo(enc *jsontext.Encoder, opts json.Options) error {
-	return ordmap.MarshalJSONTo(&om, enc, opts)
+var _ json.MarshalerTo = (*cannotMarshalValue)(nil)
+
+func (om cannotMarshalValue) MarshalJSONTo(enc *jsontext.Encoder) error {
+	return ordmap.MarshalJSONTo(&om, enc)
 }
 
-func (om *cannotMarshalValue) UnmarshalJSONFrom(dec *jsontext.Decoder, opts json.Options) error {
-	return ordmap.UnmarshalJSONFrom(om, dec, opts,
+var _ json.UnmarshalerFrom = (*cannotMarshalValue)(nil)
+
+func (om *cannotMarshalValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	return ordmap.UnmarshalJSONFrom(om, dec,
 		func(v *impossibleToMarshal, i int) *impossibleToMarshal { return v })
 }
 

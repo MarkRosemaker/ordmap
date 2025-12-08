@@ -22,9 +22,7 @@ func TestByIndex(t *testing.T) {
 			"baz": &ValueWithIndex{idx: 3},
 		}
 
-		testByIndex[*ValueWithIndex](t, om, func(s string) {
-			om[s] = &ValueWithIndex{}
-		})
+		testByIndex(t, om, func(s string) { om[s] = &ValueWithIndex{} })
 	})
 
 	t.Run("ordered map", func(t *testing.T) {

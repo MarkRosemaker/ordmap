@@ -1,17 +1,11 @@
 package ordmap_test
 
 import (
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"reflect"
 	"testing"
-
-	"github.com/MarkRosemaker/ordmap"
-	"github.com/go-json-experiment/json"
-	"github.com/go-json-experiment/json/jsontext"
 )
-
-func (om *UserDefinedOrderedMap) UnmarshalJSONFrom(dec *jsontext.Decoder, opts json.Options) error {
-	return ordmap.UnmarshalJSONFrom(om, dec, opts, setIndex)
-}
 
 func TestUnmarshalJSONFrom(t *testing.T) {
 	t.Parallel()
