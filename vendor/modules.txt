@@ -1,6 +1,6 @@
 # github.com/MarkRosemaker/errpath v0.0.0-20241223110529-3530cd011135
 ## explicit; go 1.23.2
 github.com/MarkRosemaker/errpath
-# golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
-## explicit; go 1.22.0
+# golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93
+## explicit; go 1.24.0
 golang.org/x/exp/maps
