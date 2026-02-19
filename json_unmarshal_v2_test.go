@@ -3,6 +3,7 @@ package ordmap_test
 import (
 	"encoding/json/jsontext"
 	"encoding/json/v2"
+	"io"
 	"reflect"
 	"testing"
 )
@@ -73,12 +74,20 @@ func TestUnmarshal_Errors(t *testing.T) {
 				}
 			})
 
+			t.Run("empty", func(t *testing.T) {
+				err := json.Unmarshal(nil, reflect.New(testType.tp).Interface())
+
+				syntErr := errAs[jsontext.SyntacticError](t, err)
+				if syntErr.Err != io.ErrUnexpectedEOF {
+					t.Fatalf("want: %q, got: %q", io.ErrUnexpectedEOF, syntErr.Err)
+				}
+			})
+
 			for _, tc := range []struct {
 				name string
 				data string
 				err  string
 			}{
-				{"empty", ``, `EOF`},
 				{"string instead of object", `""`, `expected {, got string`},
 				{
 					"missing string for object name", `{"foo":{"foo":"foo","bar":1`,
