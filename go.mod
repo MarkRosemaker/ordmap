@@ -1,6 +1,6 @@
 module github.com/MarkRosemaker/ordmap
 
-go 1.26.0
+go 1.27
 
 require (
 	github.com/MarkRosemaker/errpath v0.0.0-20260425165607-bbd4959d04d9
