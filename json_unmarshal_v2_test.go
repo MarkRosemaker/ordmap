@@ -62,6 +62,7 @@ func TestUnmarshal_Errors(t *testing.T) {
 		t.Run(testType.name, func(t *testing.T) {
 			t.Run("invalid key", func(t *testing.T) {
 				err := json.Unmarshal([]byte(`{1}`), reflect.New(testType.tp).Interface())
+
 				synErr := errAs[jsontext.SyntacticError](t, err)
 				if synErr.JSONPointer != "" {
 					t.Fatalf("got: %v, want: %v", synErr.JSONPointer, "")

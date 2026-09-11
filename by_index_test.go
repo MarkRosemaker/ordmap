@@ -67,6 +67,7 @@ func testByIndex[V, Val any, M interface {
 		if indexedKeys[i] != k {
 			t.Fatalf("got: %v, want: %v", k, indexedKeys[i])
 		}
+
 		i++
 	}
 
@@ -96,6 +97,7 @@ func testByIndex[V, Val any, M interface {
 				t.Fatalf("unexpected key: %v", k)
 			}
 		}
+
 		i++
 	}
 
