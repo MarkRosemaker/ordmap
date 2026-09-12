@@ -1,0 +1,5 @@
+- **Seamless JSON v2 Integration:** Directly integrates with the [JSON v2](https://pkg.go.dev/encoding/json/v2) library for efficient and order-preserving marshalling and unmarshalling.
+- **Custom Ordered Maps:** Provides robust helper functions to easily define your own custom ordered maps with minimal boilerplate code.
+- **Pre-Defined Ordered Map Alias:** Simplifies usage by offering a pre-defined ordered map type that can be conveniently aliased for specific key and value types.
+- **Efficient Ordered Operations:** Ensures efficient insertion, retrieval, and iteration while maintaining the order of elements, making it ideal for use cases where order matters.
+- **Ordered Iteration:** Leverages the `ByIndex` method to iterate over the map in an ordered manner based on the insertion sequence.
