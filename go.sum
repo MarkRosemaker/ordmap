@@ -1,4 +1,4 @@
-github.com/MarkRosemaker/errpath v0.0.0-20260914220150-6b8e6c2e500b h1:zHJzpjhsQUf1kTNH7fCyCd28/2g+JRkHkjMfq6PrcWY=
-github.com/MarkRosemaker/errpath v0.0.0-20260914220150-6b8e6c2e500b/go.mod h1:VnXpUlsS3n1gSToedcQl2FCARGoA16CyitbCanUIv+I=
+github.com/MarkRosemaker/errpath v0.0.0-20260914225534-a987c688f54e h1:/X4xRnqZl6ogxrQv5vVhw8uaE/7CXGvaJG3rZltS9Gc=
+github.com/MarkRosemaker/errpath v0.0.0-20260914225534-a987c688f54e/go.mod h1:VnXpUlsS3n1gSToedcQl2FCARGoA16CyitbCanUIv+I=
 golang.org/x/exp v0.0.0-20260908205506-85c1c2202aba h1:Ck8QetSgk912qxWLMCKxd0in+aiyBQyDSMae6e/xmpU=
 golang.org/x/exp v0.0.0-20260908205506-85c1c2202aba/go.mod h1:50RgIsmK7OwqzTTeqcSXQW8SswW0o8fRcDxmqGluJ8E=
