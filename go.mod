@@ -3,6 +3,6 @@ module github.com/MarkRosemaker/ordmap
 go 1.27
 
 require (
-	github.com/MarkRosemaker/errpath v0.0.0-20260929233333-1f3585d128eb
+	github.com/MarkRosemaker/errpath v0.0.0-20261004011213-d39d7f96c8f4
 	golang.org/x/exp v0.0.0-20260908205506-85c1c2202aba
 )
