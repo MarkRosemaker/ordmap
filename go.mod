@@ -4,5 +4,5 @@ go 1.27
 
 require (
 	github.com/MarkRosemaker/errpath v0.0.0-20261118230255-99e20cb3445a
-	golang.org/x/exp v0.0.0-20261120130654-b6de8d37927a
+	golang.org/x/exp v0.0.0-20261120182113-8801fbdfac81
 )
