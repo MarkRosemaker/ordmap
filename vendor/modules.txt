@@ -1,4 +1,4 @@
-# github.com/MarkRosemaker/errpath v0.0.0-20261118230255-99e20cb3445a
+# github.com/MarkRosemaker/errpath v0.0.0-20261127001931-41afc0b86075
 ## explicit; go 1.23.2
 github.com/MarkRosemaker/errpath
 # golang.org/x/exp v0.0.0-20261124000051-d6646c509b6d
